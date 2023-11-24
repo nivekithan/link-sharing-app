@@ -6,7 +6,13 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
+import { href } from "~/components/icons/icon";
 import "./tailwind.css";
+import { type LinksFunction } from "@remix-run/node";
+
+export function links(): ReturnType<LinksFunction> {
+  return [{ rel: "preload", href: href, as: "image" }];
+}
 
 export default function App() {
   return (
