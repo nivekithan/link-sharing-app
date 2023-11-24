@@ -1,4 +1,5 @@
 {
+  "$schema": "https://json.schemastore.org/package.json",
   "name": "link-sharing-app",
   "private": true,
   "sideEffects": false,
@@ -10,16 +11,20 @@
     "typecheck": "tsc",
     "sst:deploy": "sst deploy",
     "sst:dev": "sst dev",
-    "build:icons": "npx rmx-cli svg-sprite other/icons app/components/icons"
+    "build:icons": "npx rmx-cli svg-sprite other/icons app/components/icons",
+    "generate": "sst bind drizzle-kit generate:pg",
+    "migrate": "sst bind tsx ./other/scripts/migrateDb.ts"
   },
   "dependencies": {
     "@conform-to/react": "^0.9.1",
     "@conform-to/zod": "^0.9.1",
+    "@neondatabase/serverless": "^0.6.0",
     "@radix-ui/react-slot": "^1.0.2",
     "@remix-run/node": "^2.3.1",
     "@remix-run/react": "^2.3.1",
     "@remix-run/serve": "^2.3.1",
     "clsx": "^2.0.0",
+    "drizzle-orm": "^0.29.0",
     "isbot": "^3.6.8",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -29,20 +34,26 @@
   "devDependencies": {
     "@remix-run/dev": "^2.3.1",
     "@remix-run/eslint-config": "^2.3.1",
+    "@types/node": "^20.10.0",
     "@types/react": "^18.2.20",
     "@types/react-dom": "^18.2.7",
     "aws-cdk-lib": "2.110.1",
     "constructs": "10.3.0",
+    "drizzle-kit": "^0.20.4",
     "eslint": "^8.38.0",
+    "pg": "^8.11.3",
     "postcss": "^8.4.31",
+    "postgres": "^3.4.3",
     "rmx-cli": "^0.4.15",
     "sst": "^2.36.4",
     "tailwindcss": "^3.3.5",
+    "tsx": "^4.5.0",
     "typescript": "^5.1.6",
     "vite": "^5.0.2",
     "vite-tsconfig-paths": "^4.2.1"
   },
   "engines": {
     "node": ">=18.0.0"
-  }
+  },
+  "types": "module"
 }
