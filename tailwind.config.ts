@@ -12,6 +12,7 @@ export default {
         dark: {
           gray: "#333333",
         },
+        red: "#FF3939",
       },
       boxShadow: {
         active: "0 0 32px 0 rgb(99 60 255 / 0.25)",
