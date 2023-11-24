@@ -4,13 +4,14 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
-    "build": "remix build",
-    "dev": "remix dev --manual",
+    "build": "vite build && vite build --ssr",
+    "dev": "sst bind vite dev",
     "start": "remix-serve ./build/index.js",
-    "typecheck": "tsc"
+    "typecheck": "tsc",
+    "sst:deploy": "sst deploy",
+    "sst:dev": "sst dev"
   },
   "dependencies": {
-    "@remix-run/css-bundle": "^2.3.1",
     "@remix-run/node": "^2.3.1",
     "@remix-run/react": "^2.3.1",
     "@remix-run/serve": "^2.3.1",
@@ -23,8 +24,15 @@
     "@remix-run/eslint-config": "^2.3.1",
     "@types/react": "^18.2.20",
     "@types/react-dom": "^18.2.7",
+    "aws-cdk-lib": "2.110.1",
+    "constructs": "10.3.0",
     "eslint": "^8.38.0",
-    "typescript": "^5.1.6"
+    "postcss": "^8.4.31",
+    "sst": "^2.36.4",
+    "tailwindcss": "^3.3.5",
+    "typescript": "^5.1.6",
+    "vite": "^5.0.2",
+    "vite-tsconfig-paths": "^4.2.1"
   },
   "engines": {
     "node": ">=18.0.0"
