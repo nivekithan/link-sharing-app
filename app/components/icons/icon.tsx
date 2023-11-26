@@ -11,7 +11,9 @@ export default function Icon({ icon, ...props}: SVGProps<SVGSVGElement> & { icon
 }
 
 export const iconNames = [
+  "icon-drag-and-drop",
   "icon-email",
+  "icon-github",
   "icon-link",
   "icon-password",
   "icon-preview-header",
