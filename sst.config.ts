@@ -11,8 +11,11 @@ export default {
   stacks(app) {
     app.stack(function Site({ stack }) {
       const DATABASE_URL = new Config.Secret(stack, "DATABASE_URL");
+      const COOKIE_SECRET = new Config.Secret(stack, "COOKIE_SECRET");
 
-      const site = new RemixSite(stack, "site", { bind: [DATABASE_URL] });
+      const site = new RemixSite(stack, "site", {
+        bind: [DATABASE_URL, COOKIE_SECRET],
+      });
 
       stack.addOutputs({
         url: site.url,

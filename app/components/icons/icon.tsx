@@ -12,7 +12,10 @@ export default function Icon({ icon, ...props}: SVGProps<SVGSVGElement> & { icon
 
 export const iconNames = [
   "icon-email",
+  "icon-link",
   "icon-password",
+  "icon-preview-header",
+  "icon-profile-details-header",
   "logo-devlinks-large",
   "logo-devlinks-small",
 ] as const;
