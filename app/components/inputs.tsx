@@ -1,7 +1,8 @@
 import { cn } from "@/utils/styles";
 import Icon, { type IconName } from "./icons/icon";
 import { TextBodyS } from "./typography";
-import { useId } from "react";
+import { useId, useState } from "react";
+import * as Select from "@radix-ui/react-select";
 
 export type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   icon: IconName;
@@ -49,5 +50,124 @@ export function InputField({ labelValue, inputProps }: InputFieldProps) {
       </TextBodyS>
       <Input id={id} {...inputProps} />
     </div>
+  );
+}
+
+const platformLinkOptions = [
+  { displayText: "Github", icon: "icon-github", value: "github" },
+  {
+    displayText: "Frontend Mentor",
+    icon: "icon-frontend-mentor",
+    value: "frontend-mentor",
+  },
+  {
+    displayText: "Twitter",
+    icon: "icon-twitter",
+    value: "twitter",
+  },
+  {
+    displayText: "LinkedIn",
+    icon: "icon-linkedin",
+    value: "linkedin",
+  },
+  {
+    displayText: "Youtube",
+    icon: "icon-youtube",
+    value: "youtube",
+  },
+  {
+    displayText: "Facebook",
+    icon: "icon-facebook",
+    value: "facebook",
+  },
+  {
+    displayText: "Twitch",
+    icon: "icon-twitch",
+    value: "twitch",
+  },
+  {
+    displayText: "Codewars",
+    icon: "icon-codewars",
+    value: "codewars",
+  },
+  {
+    displayText: "Codepen",
+    icon: "icon-codepen",
+    value: "codepen",
+  },
+  {
+    displayText: "freecodecamp",
+    icon: "icon-freecodecamp",
+    value: "freecodecamp",
+  },
+  {
+    displayText: "Gitlab",
+    icon: "icon-gitlab",
+    value: "gitlab",
+  },
+  {
+    displayText: "Hashnode",
+    icon: "icon-hashnode",
+    value: "hashnode",
+  },
+  {
+    displayText: "Stack Overflow",
+    icon: "icon-stack-overflow",
+    value: "stack-overflow",
+  },
+] as const satisfies { value: string; icon: IconName; displayText: string }[];
+
+type PlatformLinkValue = (typeof platformLinkOptions)[number]["value"];
+
+export function SelectPlatform() {
+  const [selectedPlatform, setSelectedPlaform] =
+    useState<PlatformLinkValue>("github");
+
+  return (
+    <Select.Root
+      value={selectedPlatform}
+      onValueChange={(v) => setSelectedPlaform(v as PlatformLinkValue)}
+    >
+      <Select.Trigger className="w-full rounded-lg border-borders border p-4 text-base leading-[150%] text-dark-gray focus:border-purple outline-none focus:ring-0 focus:ring-offset-0 focus:shadow-active caret-purple text-start flex gap-x-3 items-center">
+        <div className="w-4 h-4 text-gray">
+          <Icon
+            icon={
+              platformLinkOptions.find((v) => v.value === selectedPlatform)!
+                .icon
+            }
+          />
+        </div>
+        <Select.Value />
+      </Select.Trigger>
+
+      <Select.Portal>
+        <Select.Content
+          position="popper"
+          sideOffset={8}
+          side="bottom"
+          className="border border-borders rounded-lg max-h-[--radix-select-content-available-height] w-[--radix-select-trigger-width]"
+          avoidCollisions={false}
+        >
+          <Select.Viewport>
+            {platformLinkOptions.map((platformLink) => {
+              return (
+                <Select.Item
+                  value={platformLink.value}
+                  key={platformLink.value}
+                  className="flex gap-x-3 p-4 text-base leading-[150%] text-dark-gary bg-white items-center "
+                >
+                  <Select.Icon>
+                    <div className="w-4 h-4 text-gray">
+                      <Icon icon={platformLink.icon} />
+                    </div>
+                  </Select.Icon>
+                  <Select.ItemText>{platformLink.displayText}</Select.ItemText>
+                </Select.Item>
+              );
+            })}
+          </Select.Viewport>
+        </Select.Content>
+      </Select.Portal>
+    </Select.Root>
   );
 }

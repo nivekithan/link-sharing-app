@@ -3,7 +3,7 @@ import { type LoaderFunctionArgs } from "@remix-run/node";
 import { PrimaryActionButton } from "~/components/buttons";
 import Icon from "~/components/icons/icon";
 import { EmptyLinksIllustration } from "~/components/illustrations/emptyLinks";
-import { InputField } from "~/components/inputs";
+import { InputField, SelectPlatform } from "~/components/inputs";
 import { TextBodyM, TextHeadingS } from "~/components/typography";
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -41,12 +41,9 @@ function SingleLinkSelection() {
     <div className="bg-lightGray p-5 flex flex-col gap-y-3">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-x-2">
-          <Icon
-            icon="icon-drag-and-drop"
-            width={12}
-            height={6}
-            className="text-gray"
-          />
+          <div className="w-3 h-[6px] text-gray">
+            <Icon icon="icon-drag-and-drop" />
+          </div>
           <p className="text-base font-bold leading-[150%] text-gray">
             Link #1
           </p>
@@ -55,10 +52,7 @@ function SingleLinkSelection() {
           <TextBodyM className="text-gray">Remove</TextBodyM>
         </button>
       </div>
-      <InputField
-        labelValue="Platform"
-        inputProps={{ icon: "icon-github", placeholder: "Github" }}
-      />
+      <SelectPlatform />
       <InputField
         labelValue="Link"
         inputProps={{
