@@ -1,11 +1,12 @@
 import { cn } from "@/utils/styles";
 import { type IconName } from "./icons/icon";
 import { TextBodyS } from "./typography";
-import { useId, useState } from "react";
+import { useId } from "react";
 import * as Select from "@radix-ui/react-select";
 import { Icon } from "./icons";
 import { create } from "zustand";
 import { produce } from "immer";
+import { arrayMove } from "@dnd-kit/sortable";
 
 export type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   icon: IconName;
@@ -121,11 +122,12 @@ const platformLinkOptions = [
 ] as const satisfies { value: string; icon: IconName; displayText: string }[];
 
 export type PlatformLinkStore = {
-  links: { platform: PlatformValue; link?: string }[];
+  links: { platform: PlatformValue; link?: string; id: string }[];
   addNewLink: () => void;
   setPlatform: (args: { index: number; platform: PlatformValue }) => void;
   setLink: (args: { index: number; link: string }) => void;
   removeLink: (index: number) => void;
+  reArrangeLinks: (args: { oldIndex: number; newIndex: number }) => void;
 };
 
 export const usePlatformLinkStore = create<PlatformLinkStore>((set) => {
@@ -134,7 +136,7 @@ export const usePlatformLinkStore = create<PlatformLinkStore>((set) => {
     addNewLink: () =>
       set(
         produce((state: PlatformLinkStore) => {
-          state.links.push({ platform: "github" });
+          state.links.push({ platform: "github", id: crypto.randomUUID() });
         }),
       ),
     setLink: ({ index, link }) =>
@@ -165,6 +167,9 @@ export const usePlatformLinkStore = create<PlatformLinkStore>((set) => {
           state.links.splice(index, 1);
         }),
       ),
+
+    reArrangeLinks: ({ oldIndex, newIndex }) =>
+      set((state) => ({ links: arrayMove(state.links, oldIndex, newIndex) })),
   };
 });
 

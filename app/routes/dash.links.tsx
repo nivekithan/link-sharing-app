@@ -9,6 +9,23 @@ import {
   usePlatformLinkStore,
 } from "~/components/inputs";
 import { TextBodyM, TextHeadingS } from "~/components/typography";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  TouchSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   await requireUser(request);
@@ -36,17 +53,52 @@ function AllLinks() {
       <PageHeader />
       <div className="flex flex-col gap-y-6">
         <AddNewLink />
-        {linksLength === 0 ? (
-          <LinksEmptyState />
-        ) : (
-          Array(linksLength)
-            .fill(true)
-            .map((_v, i) => {
-              return <SingleLinkSelection index={i} key={i} />;
-            })
-        )}
+        {linksLength === 0 ? <LinksEmptyState /> : <SortableLinkList />}
       </div>
     </div>
+  );
+}
+
+function SortableLinkList() {
+  const links = usePlatformLinkStore((state) => state.links);
+  const linksLength = links.length;
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
+    useSensor(TouchSensor),
+  );
+
+  const reArrangeLinks = usePlatformLinkStore((state) => state.reArrangeLinks);
+
+  if (linksLength <= 0) {
+    throw new Error(
+      "SortableLinkList component has rendered when there length of links is 0",
+    );
+  }
+
+  function onDragEnd({ active, over }: DragEndEvent) {
+    if (over && active.id !== over.id) {
+      const oldIndex = links.findIndex((v) => v.id === active.id);
+      const newIndex = links.findIndex((v) => v.id === over.id);
+
+      reArrangeLinks({ newIndex, oldIndex });
+    }
+  }
+
+  return (
+    <DndContext
+      sensors={sensors}
+      collisionDetection={closestCenter}
+      onDragEnd={onDragEnd}
+    >
+      <SortableContext items={links} strategy={verticalListSortingStrategy}>
+        {links.map((links, i) => {
+          return <SingleLinkSelection index={i} key={links.id} />;
+        })}
+      </SortableContext>
+    </DndContext>
   );
 }
 
@@ -59,13 +111,34 @@ export type SingleLinkSelectionProps = {
  * by props
  */
 function SingleLinkSelection({ index }: SingleLinkSelectionProps) {
+  const id = usePlatformLinkStore((state) => state.links[index].id);
+  const { attributes, listeners, setNodeRef, transform, transition, active } =
+    useSortable({ id });
+
+  const isDragging = active?.id === id;
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    zIndex: isDragging ? "999" : undefined,
+  };
+
   return (
-    <div className="bg-lightGray p-5 flex flex-col gap-y-3">
+    <div
+      className="bg-lightGray p-5 flex flex-col gap-y-3"
+      ref={setNodeRef}
+      style={style}
+    >
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-x-2">
-          <div className="w-3 h-[6px] text-gray">
+          <button
+            className="w-3 h-[6px] text-gray"
+            type="button"
+            {...attributes}
+            {...listeners}
+          >
             <Icon icon="icon-drag-and-drop" />
-          </div>
+          </button>
           <p className="text-base font-bold leading-[150%] text-gray">
             Link #{index + 1}
           </p>
