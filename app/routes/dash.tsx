@@ -1,8 +1,7 @@
 import { requireUser } from "@/authSession.server";
 import { type LoaderFunctionArgs } from "@remix-run/node";
 import { Link, Outlet } from "@remix-run/react";
-import { LogoDevlinksSmall } from "~/components/icons";
-import Icon from "~/components/icons/icon";
+import { Icon, LogoDevlinksSmall } from "~/components/icons";
 import { TabLinks, Tabs } from "~/components/tabLinks";
 
 export async function loader({ request }: LoaderFunctionArgs) {

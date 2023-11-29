@@ -1,7 +1,7 @@
 import { requireUser } from "@/authSession.server";
 import { type LoaderFunctionArgs } from "@remix-run/node";
 import { PrimaryActionButton } from "~/components/buttons";
-import Icon from "~/components/icons/icon";
+import { Icon } from "~/components/icons";
 import { EmptyLinksIllustration } from "~/components/illustrations/emptyLinks";
 import { InputField, SelectPlatform } from "~/components/inputs";
 import { TextBodyM, TextHeadingS } from "~/components/typography";

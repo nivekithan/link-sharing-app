@@ -1,8 +1,9 @@
 import { cn } from "@/utils/styles";
-import Icon, { type IconName } from "./icons/icon";
+import { type IconName } from "./icons/icon";
 import { TextBodyS } from "./typography";
 import { useId, useState } from "react";
 import * as Select from "@radix-ui/react-select";
+import { Icon } from "./icons";
 
 export type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   icon: IconName;
@@ -21,7 +22,7 @@ function Input({ className, icon, error, ...props }: InputProps) {
         {...props}
       />
       <div className="w-4 h-4 top-4 left-4 bottom-4 absolute">
-        <Icon icon={icon} className="w-full h-full text-gray" />
+        <Icon icon={icon} className="text-gray" />
       </div>
       {error ? (
         <TextBodyS className="absolute top-4 bottom-4 right-4 text-red">
@@ -128,16 +129,21 @@ export function SelectPlatform() {
       value={selectedPlatform}
       onValueChange={(v) => setSelectedPlaform(v as PlatformLinkValue)}
     >
-      <Select.Trigger className="w-full rounded-lg border-borders border p-4 text-base leading-[150%] text-dark-gray focus:border-purple outline-none focus:ring-0 focus:ring-offset-0 focus:shadow-active caret-purple text-start flex gap-x-3 items-center">
-        <div className="w-4 h-4 text-gray">
-          <Icon
-            icon={
-              platformLinkOptions.find((v) => v.value === selectedPlatform)!
-                .icon
-            }
-          />
+      <Select.Trigger className="w-full rounded-lg border-borders border p-4 text-base leading-[150%] text-dark-gray data-[state=open]:border-purple outline-none data-[state=open]:ring-0 data-[state=open]:ring-offset-0 data-[state=open]:shadow-active caret-purple text-start flex items-center justify-between group">
+        <div className="flex gap-x-3 items-center">
+          <div className="w-4 h-4 text-gray ">
+            <Icon
+              icon={
+                platformLinkOptions.find((v) => v.value === selectedPlatform)!
+                  .icon
+              }
+            />
+          </div>
+          <Select.Value />
         </div>
-        <Select.Value />
+        <div className="w-4 h-4 text-purple group-data-[state=open]:rotate-180 transition-transform duration-75">
+          <Icon icon="icon-chevron-down" />
+        </div>
       </Select.Trigger>
 
       <Select.Portal>
@@ -154,14 +160,21 @@ export function SelectPlatform() {
                 <Select.Item
                   value={platformLink.value}
                   key={platformLink.value}
-                  className="flex gap-x-3 p-4 text-base leading-[150%] text-dark-gary bg-white items-center "
+                  className="group flex gap-x-3 p-4 text-base leading-[150%] text-dark-gary bg-white items-center data-[state=checked]:text-purple"
                 >
                   <Select.Icon>
-                    <div className="w-4 h-4 text-gray">
+                    <div className="w-4 h-4 text-gray group-data-[state=checked]:text-purple">
                       <Icon icon={platformLink.icon} />
                     </div>
                   </Select.Icon>
-                  <Select.ItemText>{platformLink.displayText}</Select.ItemText>
+                  <span>
+                    <Select.ItemText>
+                      {platformLink.displayText}
+                    </Select.ItemText>{" "}
+                    <span className="text-purple hidden group-data-[state=checked]:inline">
+                      (Selected)
+                    </span>
+                  </span>
                 </Select.Item>
               );
             })}

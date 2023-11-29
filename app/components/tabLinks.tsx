@@ -1,9 +1,10 @@
 import { cn } from "@/utils/styles";
 import { Link, useLocation } from "@remix-run/react";
-import Icon, { type IconName } from "./icons/icon";
+import { type IconName } from "./icons/icon";
 import { type RemixLinkProps } from "@remix-run/react/dist/components";
 import { createContext, useContext } from "react";
 import { match } from "path-to-regexp";
+import { Icon } from "./icons";
 
 export type TabsProps = React.HTMLAttributes<HTMLDivElement>;
 

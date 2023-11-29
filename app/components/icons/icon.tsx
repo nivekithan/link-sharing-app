@@ -1,21 +1,17 @@
 import { type SVGProps } from "react";
 import href from "./icon.svg";
-import { cn } from "@/utils/styles";
 export { href };
 
-export default function Icon({
-  icon,
-  className,
-  ...props
-}: SVGProps<SVGSVGElement> & { icon: IconName }) {
+export default function Icon({ icon, ...props}: SVGProps<SVGSVGElement> & { icon: IconName }) {
   return (
-    <svg className={cn("w-full h-full", className)} {...props}>
+    <svg {...props}>
       <use href={`${href}#${icon}`} />
     </svg>
   );
 }
 
 export const iconNames = [
+  "icon-chevron-down",
   "icon-codepen",
   "icon-codewars",
   "icon-devto",
@@ -39,4 +35,4 @@ export const iconNames = [
   "logo-devlinks-large",
   "logo-devlinks-small",
 ] as const;
-export type IconName = (typeof iconNames)[number];
+export type IconName = typeof iconNames[number];
