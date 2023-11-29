@@ -4,6 +4,8 @@ import { TextBodyS } from "./typography";
 import { useId, useState } from "react";
 import * as Select from "@radix-ui/react-select";
 import { Icon } from "./icons";
+import { create } from "zustand";
+import { produce } from "immer";
 
 export type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   icon: IconName;
@@ -118,11 +120,66 @@ const platformLinkOptions = [
   },
 ] as const satisfies { value: string; icon: IconName; displayText: string }[];
 
-type PlatformLinkValue = (typeof platformLinkOptions)[number]["value"];
+export type PlatformLinkStore = {
+  links: { platform: PlatformValue; link?: string }[];
+  addNewLink: () => void;
+  setPlatform: (args: { index: number; platform: PlatformValue }) => void;
+  setLink: (args: { index: number; link: string }) => void;
+  removeLink: (index: number) => void;
+};
 
-export function SelectPlatform() {
-  const [selectedPlatform, setSelectedPlaform] =
-    useState<PlatformLinkValue>("github");
+export const usePlatformLinkStore = create<PlatformLinkStore>((set) => {
+  return {
+    links: [],
+    addNewLink: () =>
+      set(
+        produce((state: PlatformLinkStore) => {
+          state.links.push({ platform: "github" });
+        }),
+      ),
+    setLink: ({ index, link }) =>
+      set(
+        produce((state: PlatformLinkStore) => {
+          if (state.links[index] === undefined) {
+            throw new Error(`Invalid index: ${index}`);
+          }
+
+          state.links[index].link = link;
+        }),
+      ),
+
+    setPlatform: ({ index, platform }) =>
+      set(
+        produce((state: PlatformLinkStore) => {
+          if (state.links[index] === undefined) {
+            throw new Error(`Invalid Index: ${index}`);
+          }
+
+          state.links[index].platform = platform;
+        }),
+      ),
+
+    removeLink: (index) =>
+      set(
+        produce((state: PlatformLinkStore) => {
+          state.links.splice(index, 1);
+        }),
+      ),
+  };
+});
+
+type PlatformValue = (typeof platformLinkOptions)[number]["value"];
+
+export type SelectPlatformProps = {
+  index: number;
+};
+
+export function SelectPlatform({ index }: SelectPlatformProps) {
+  const { platform, setSelectedPlatform } = usePlatformLinkStore((state) => ({
+    platform: state.links[index].platform,
+    setSelectedPlatform: (platform: PlatformValue) =>
+      state.setPlatform({ index, platform }),
+  }));
 
   return (
     <div className="flex flex-col gap-y-1">
@@ -130,16 +187,15 @@ export function SelectPlatform() {
         <label className="text-dark-gray">Platform</label>
       </TextBodyS>
       <Select.Root
-        value={selectedPlatform}
-        onValueChange={(v) => setSelectedPlaform(v as PlatformLinkValue)}
+        value={platform}
+        onValueChange={(v) => setSelectedPlatform(v as PlatformValue)}
       >
         <Select.Trigger className="w-full rounded-lg border-borders border p-4 text-base leading-[150%] text-dark-gray data-[state=open]:border-purple outline-none data-[state=open]:ring-0 data-[state=open]:ring-offset-0 data-[state=open]:shadow-active caret-purple text-start flex items-center justify-between group">
           <div className="flex gap-x-3 items-center">
             <div className="w-4 h-4 text-gray ">
               <Icon
                 icon={
-                  platformLinkOptions.find((v) => v.value === selectedPlatform)!
-                    .icon
+                  platformLinkOptions.find((v) => v.value === platform)!.icon
                 }
               />
             </div>

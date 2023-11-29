@@ -3,7 +3,11 @@ import { type LoaderFunctionArgs } from "@remix-run/node";
 import { PrimaryActionButton } from "~/components/buttons";
 import { Icon } from "~/components/icons";
 import { EmptyLinksIllustration } from "~/components/illustrations/emptyLinks";
-import { InputField, SelectPlatform } from "~/components/inputs";
+import {
+  InputField,
+  SelectPlatform,
+  usePlatformLinkStore,
+} from "~/components/inputs";
 import { TextBodyM, TextHeadingS } from "~/components/typography";
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -25,18 +29,36 @@ export default function DashLinks() {
 }
 
 function AllLinks() {
+  const linksLength = usePlatformLinkStore((state) => state.links.length);
+
   return (
     <div className="p-6 flex flex-col gap-y-10">
       <PageHeader />
       <div className="flex flex-col gap-y-6">
         <AddNewLink />
-        <SingleLinkSelection />
+        {linksLength === 0 ? (
+          <LinksEmptyState />
+        ) : (
+          Array(linksLength)
+            .fill(true)
+            .map((_v, i) => {
+              return <SingleLinkSelection index={i} key={i} />;
+            })
+        )}
       </div>
     </div>
   );
 }
 
-function SingleLinkSelection() {
+export type SingleLinkSelectionProps = {
+  index: number;
+};
+
+/*
+ * TODO: Use react context to propagate `index` to child componentes. Instead of passing
+ * by props
+ */
+function SingleLinkSelection({ index }: SingleLinkSelectionProps) {
   return (
     <div className="bg-lightGray p-5 flex flex-col gap-y-3">
       <div className="flex items-center justify-between">
@@ -45,25 +67,58 @@ function SingleLinkSelection() {
             <Icon icon="icon-drag-and-drop" />
           </div>
           <p className="text-base font-bold leading-[150%] text-gray">
-            Link #1
+            Link #{index + 1}
           </p>
         </div>
-        <button type="button">
-          <TextBodyM className="text-gray">Remove</TextBodyM>
-        </button>
+        <RemoveLink index={index} />
       </div>
-      <SelectPlatform />
-      <InputField
-        labelValue="Link"
-        inputProps={{
-          icon: "icon-link",
-          placeholder: "e.g.https://www.github.com/johnappleseed",
-        }}
-      />
+      <SelectPlatform index={index} />
+      <LinkInputField index={index} />
     </div>
   );
 }
 
+type LinkInputFieldProps = {
+  index: number;
+};
+
+function LinkInputField({ index }: LinkInputFieldProps) {
+  const { link, setSelectedLink } = usePlatformLinkStore((state) => ({
+    link: state.links[index].link,
+    setSelectedLink: (link: string) => state.setLink({ index, link }),
+  }));
+
+  return (
+    <InputField
+      labelValue="Link"
+      inputProps={{
+        icon: "icon-link",
+        placeholder: "e.g.https://www.github.com/johnappleseed",
+        value: link,
+        onChange(e) {
+          const newValue = e.currentTarget.value;
+          setSelectedLink(newValue);
+        },
+      }}
+    />
+  );
+}
+
+type RemoveLinkProps = {
+  index: number;
+};
+
+function RemoveLink({ index }: RemoveLinkProps) {
+  const onRemoveLink = usePlatformLinkStore(
+    (state) => () => state.removeLink(index),
+  );
+
+  return (
+    <button type="button" onClick={onRemoveLink}>
+      <TextBodyM className="text-gray">Remove</TextBodyM>
+    </button>
+  );
+}
 function SaveButton() {
   return (
     <div className="px-7 py-3">
@@ -74,10 +129,13 @@ function SaveButton() {
   );
 }
 function AddNewLink() {
+  const addNewLink = usePlatformLinkStore((state) => state.addNewLink);
+
   return (
     <button
       className="px-7 py-3 text-purple border border-purple rounded-lg"
       type="button"
+      onClick={addNewLink}
     >
       <TextHeadingS>+Add new link</TextHeadingS>
     </button>
