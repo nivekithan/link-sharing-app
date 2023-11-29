@@ -98,6 +98,7 @@ function PageHeader() {
 function Seperator() {
   return <div className="h-[1px] bg-borders w-[full]"></div>;
 }
+
 function LinksEmptyState() {
   return (
     <div className="p-5 flex flex-col gap-y-6 items-center">
