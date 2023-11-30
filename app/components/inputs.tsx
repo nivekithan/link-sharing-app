@@ -1,10 +1,10 @@
 import { cn } from "@/utils/styles";
 import { type IconName } from "./icons/icon";
 import { TextBodyS } from "./typography";
-import { useId } from "react";
+import { createContext, useContext, useId, useRef } from "react";
 import * as Select from "@radix-ui/react-select";
 import { Icon } from "./icons";
-import { create } from "zustand";
+import { create, useStore } from "zustand";
 import { produce } from "immer";
 import { arrayMove } from "@dnd-kit/sortable";
 
@@ -121,7 +121,7 @@ export const platformLinkOptions = [
   },
 ] as const satisfies { value: string; icon: IconName; displayText: string }[];
 
-export type PlatformLinkStore = {
+export type PlatformLinkState = {
   links: { platform: PlatformValue; link?: string; id: string }[];
   addNewLink: () => void;
   setPlatform: (args: { index: number; platform: PlatformValue }) => void;
@@ -130,54 +130,96 @@ export type PlatformLinkStore = {
   reArrangeLinks: (args: { oldIndex: number; newIndex: number }) => void;
 };
 
-export const usePlatformLinkStore = create<PlatformLinkStore>((set) => {
-  return {
-    links: [],
-    addNewLink: () =>
-      set(
-        produce((state: PlatformLinkStore) => {
-          state.links.push({ platform: "github", id: crypto.randomUUID() });
-        }),
-      ),
-    setLink: ({ index, link }) =>
-      set(
-        produce((state: PlatformLinkStore) => {
-          if (state.links[index] === undefined) {
-            throw new Error(`Invalid index: ${index}`);
-          }
+export type PlatformLinkStore = ReturnType<typeof createPlatformLinkStore>;
 
-          state.links[index].link = link;
-        }),
-      ),
+export const createPlatformLinkStore = (links: PlatformLinkState["links"]) => {
+  return create<PlatformLinkState>()((set) => {
+    return {
+      links,
+      addNewLink: () =>
+        set(
+          produce((state: PlatformLinkState) => {
+            state.links.push({ platform: "github", id: crypto.randomUUID() });
+          }),
+        ),
+      setLink: ({ index, link }) =>
+        set(
+          produce((state: PlatformLinkState) => {
+            if (state.links[index] === undefined) {
+              throw new Error(`Invalid index: ${index}`);
+            }
 
-    setPlatform: ({ index, platform }) =>
-      set(
-        produce((state: PlatformLinkStore) => {
-          if (state.links[index] === undefined) {
-            throw new Error(`Invalid Index: ${index}`);
-          }
+            state.links[index].link = link;
+          }),
+        ),
 
-          state.links[index].platform = platform;
-        }),
-      ),
+      setPlatform: ({ index, platform }) =>
+        set(
+          produce((state: PlatformLinkState) => {
+            if (state.links[index] === undefined) {
+              throw new Error(`Invalid Index: ${index}`);
+            }
 
-    removeLink: (index) =>
-      set(
-        produce((state: PlatformLinkStore) => {
-          state.links.splice(index, 1);
-        }),
-      ),
+            state.links[index].platform = platform;
+          }),
+        ),
 
-    reArrangeLinks: ({ oldIndex, newIndex }) =>
-      set((state) => ({ links: arrayMove(state.links, oldIndex, newIndex) })),
-  };
-});
+      removeLink: (index) =>
+        set(
+          produce((state: PlatformLinkState) => {
+            state.links.splice(index, 1);
+          }),
+        ),
+
+      reArrangeLinks: ({ oldIndex, newIndex }) =>
+        set((state) => ({ links: arrayMove(state.links, oldIndex, newIndex) })),
+    };
+  });
+};
 
 export type PlatformValue = (typeof platformLinkOptions)[number]["value"];
 
 export const validPlatformValue = platformLinkOptions.map(
   (option) => option.value,
 );
+
+const platformLinkStoreContext = createContext<PlatformLinkStore | null>(null);
+
+export function PlatformLinkStoreProvider({
+  children,
+  links,
+}: {
+  children: React.ReactNode;
+  links: Omit<PlatformLinkState["links"][number], "id">[];
+}) {
+  const storeRef = useRef<PlatformLinkStore | null>(null);
+
+  if (!storeRef.current) {
+    const linksWithId = links.map((links) => ({
+      ...links,
+      id: crypto.randomUUID(),
+    }));
+    storeRef.current = createPlatformLinkStore(linksWithId);
+  }
+
+  return (
+    <platformLinkStoreContext.Provider value={storeRef.current}>
+      {children}
+    </platformLinkStoreContext.Provider>
+  );
+}
+
+export function usePlatformLinkStore<T>(
+  selector: (state: PlatformLinkState) => T,
+): T {
+  const store = useContext(platformLinkStoreContext);
+
+  if (!store) {
+    throw new Error("Missing PlatformLinkStoreProvider in the tree");
+  }
+
+  return useStore(store, selector);
+}
 
 export type SelectPlatformProps = {
   index: number;

@@ -15,6 +15,7 @@ export default {
 
       const site = new RemixSite(stack, "site", {
         bind: [DATABASE_URL, COOKIE_SECRET],
+        runtime: "nodejs20.x",
       });
 
       stack.addOutputs({

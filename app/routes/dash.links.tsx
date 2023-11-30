@@ -13,6 +13,7 @@ import {
   SelectPlatform,
   usePlatformLinkStore,
   validPlatformValue,
+  PlatformLinkStoreProvider,
 } from "~/components/inputs";
 import { TextBodyM, TextHeadingS } from "~/components/typography";
 import {
@@ -32,14 +33,16 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { useFetcher } from "@remix-run/react";
+import { useFetcher, useLoaderData } from "@remix-run/react";
 import { type ZodLiteral, z } from "zod";
-import { setLinksForUser } from "@/models/links.server";
+import { getLinksForUser, setLinksForUser } from "@/models/links.server";
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  await requireUser(request);
+  const userId = await requireUser(request);
 
-  return null;
+  const listOfLinks = await getLinksForUser({ userId });
+
+  return json({ listOfLinks });
 }
 
 const SetLinksSchema = z.array(
@@ -69,12 +72,16 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export default function DashLinks() {
+  const { listOfLinks } = useLoaderData<typeof loader>();
+
   return (
     <div className="p-4">
       <div className="bg-white">
-        <AllLinks />
-        <Seperator />
-        <SaveButton />
+        <PlatformLinkStoreProvider links={listOfLinks}>
+          <AllLinks />
+          <Seperator />
+          <SaveButton />
+        </PlatformLinkStoreProvider>
       </div>
     </div>
   );
