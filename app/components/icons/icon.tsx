@@ -31,6 +31,7 @@ export const iconNames = [
   "icon-stack-overflow",
   "icon-twitch",
   "icon-twitter",
+  "icon-upload-image",
   "icon-youtube",
   "logo-devlinks-large",
   "logo-devlinks-small",

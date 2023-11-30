@@ -9,24 +9,29 @@ import { produce } from "immer";
 import { arrayMove } from "@dnd-kit/sortable";
 
 export type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
-  icon: IconName;
+  icon?: IconName;
   error?: string;
 };
 
 function Input({ className, icon, error, ...props }: InputProps) {
+  const isIconPresent = icon !== undefined;
+
   return (
     <div className="relative">
       <input
         className={cn(
-          "w-full rounded-lg border-borders border pl-11 pr-4 py-3 text-base leading-[150%] text-dark-gray focus:border-purple outline-none focus:ring-0 focus:ring-offset-0 focus:shadow-active caret-purple",
+          "w-full rounded-lg border-borders border pl-4 pr-4 py-3 text-base leading-[150%] text-dark-gray focus:border-purple outline-none focus:ring-0 focus:ring-offset-0 focus:shadow-active caret-purple",
           error ? "border-red" : undefined,
+          isIconPresent ? "pl-11" : undefined,
           className,
         )}
         {...props}
       />
-      <div className="w-4 h-4 top-4 left-4 bottom-4 absolute">
-        <Icon icon={icon} className="text-gray" />
-      </div>
+      {isIconPresent ? (
+        <div className="w-4 h-4 top-4 left-4 bottom-4 absolute">
+          <Icon icon={icon} className="text-gray" />
+        </div>
+      ) : null}
       {error ? (
         <TextBodyS className="absolute top-4 bottom-4 right-4 text-red">
           {error}
