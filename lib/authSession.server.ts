@@ -20,7 +20,7 @@ export async function requireUser(request: Request) {
   const userId = await getUserFromRequest(request);
 
   if (userId === null) {
-    return redirect("/login");
+    throw redirect("/login");
   }
 
   return userId;
@@ -30,7 +30,7 @@ export async function requireAnon(request: Request) {
   const userId = await getUserFromRequest(request);
 
   if (userId !== null) {
-    return redirect("/");
+    throw redirect("/");
   }
 }
 
@@ -41,7 +41,7 @@ async function getUserFromRequest(request: Request) {
 
   const userId = authSession.get("userId");
 
-  if (userId === undefined) {
+  if (!userId) {
     return null;
   }
 

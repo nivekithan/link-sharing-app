@@ -12,7 +12,7 @@
     "sst:deploy": "sst deploy",
     "sst:dev": "sst dev",
     "build:icons": "npx rmx-cli svg-sprite other/icons app/components/icons",
-    "generate": "sst bind drizzle-kit generate:pg",
+    "generate": "sst bind --script drizzle-kit generate:pg",
     "migrate": "sst bind tsx ./other/scripts/migrateDb.ts"
   },
   "dependencies": {

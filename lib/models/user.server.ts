@@ -1,16 +1,7 @@
 import { db } from "@/utils/db.server";
 import { eq } from "drizzle-orm";
-import { pgTable, text } from "drizzle-orm/pg-core";
-import crypto from "node:crypto";
 import { compare, hash } from "bcryptjs";
-
-export const userTable = pgTable("user", {
-  id: text("id")
-    .notNull()
-    .$default(() => crypto.randomUUID()),
-  email: text("email").notNull().unique(),
-  hashedPassword: text("hashed_password").notNull(),
-});
+import { userTable } from "./schema.server";
 
 export type isPasswordCorrectReturns =
   | {

@@ -57,7 +57,7 @@ export function InputField({ labelValue, inputProps }: InputFieldProps) {
   );
 }
 
-const platformLinkOptions = [
+export const platformLinkOptions = [
   { displayText: "Github", icon: "icon-github", value: "github" },
   {
     displayText: "Frontend Mentor",
@@ -173,7 +173,11 @@ export const usePlatformLinkStore = create<PlatformLinkStore>((set) => {
   };
 });
 
-type PlatformValue = (typeof platformLinkOptions)[number]["value"];
+export type PlatformValue = (typeof platformLinkOptions)[number]["value"];
+
+export const validPlatformValue = platformLinkOptions.map(
+  (option) => option.value,
+);
 
 export type SelectPlatformProps = {
   index: number;

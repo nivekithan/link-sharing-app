@@ -1,12 +1,18 @@
 import { requireUser } from "@/authSession.server";
-import { type LoaderFunctionArgs } from "@remix-run/node";
+import {
+  json,
+  type ActionFunctionArgs,
+  type LoaderFunctionArgs,
+} from "@remix-run/node";
 import { PrimaryActionButton } from "~/components/buttons";
 import { Icon } from "~/components/icons";
 import { EmptyLinksIllustration } from "~/components/illustrations/emptyLinks";
 import {
   InputField,
+  type PlatformValue,
   SelectPlatform,
   usePlatformLinkStore,
+  validPlatformValue,
 } from "~/components/inputs";
 import { TextBodyM, TextHeadingS } from "~/components/typography";
 import {
@@ -26,11 +32,40 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { useFetcher } from "@remix-run/react";
+import { type ZodLiteral, z } from "zod";
+import { setLinksForUser } from "@/models/links.server";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   await requireUser(request);
 
   return null;
+}
+
+const SetLinksSchema = z.array(
+  z.object({
+    platform: z.union(
+      validPlatformValue.map((value) => z.literal(value)) as [
+        ZodLiteral<PlatformValue>,
+        ZodLiteral<PlatformValue>,
+      ],
+    ),
+    link: z.string(),
+  }),
+);
+
+export async function action({ request }: ActionFunctionArgs) {
+  const userId = await requireUser(request);
+
+  const parsedRes = SetLinksSchema.safeParse(await request.json());
+
+  if (!parsedRes.success) {
+    return json({ ok: false, error: "Invalid body" });
+  }
+
+  await setLinksForUser({ links: parsedRes.data, userId });
+
+  return json({ ok: true });
 }
 
 export default function DashLinks() {
@@ -192,10 +227,34 @@ function RemoveLink({ index }: RemoveLinkProps) {
     </button>
   );
 }
+
 function SaveButton() {
+  const links = usePlatformLinkStore((state) => state.links);
+
+  const submitLinksFetcher = useFetcher();
+
+  function onSave() {
+    submitLinksFetcher.submit(links, {
+      encType: "application/json",
+      method: "post",
+    });
+  }
+
+  const linksLength = links.length;
+  const doesAllLinksValid = links.every((link) => Boolean(link.link));
+  const isSaveButtonDisabled =
+    linksLength === 0 ||
+    !doesAllLinksValid ||
+    submitLinksFetcher.state === "submitting";
+
   return (
     <div className="px-7 py-3">
-      <PrimaryActionButton disabled className="w-full">
+      <PrimaryActionButton
+        disabled={isSaveButtonDisabled}
+        className="w-full"
+        type="button"
+        onClick={onSave}
+      >
         Save
       </PrimaryActionButton>
     </div>
