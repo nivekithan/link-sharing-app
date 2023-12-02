@@ -8,6 +8,13 @@
       "when": 1701341975831,
       "tag": "0000_friendly_taskmaster",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1701535604004,
+      "tag": "0001_slimy_magik",
+      "breakpoints": true
     }
   ]
 }

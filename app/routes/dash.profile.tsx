@@ -62,7 +62,6 @@ export default function DashProfile() {
     fileUploadRef.current?.click();
   }
 
-  console.log("Hello there");
   function onUploadImageInputChange(e: ChangeEvent<HTMLInputElement>) {
     const selectedFile = e.currentTarget.files && e.currentTarget.files[0];
 
