@@ -1,5 +1,6 @@
 import type { SSTConfig } from "sst";
-import { Config, RemixSite } from "sst/constructs";
+import { Bucket, Config, RemixSite } from "sst/constructs";
+import { Effect, PolicyStatement, StarPrincipal } from "aws-cdk-lib/aws-iam";
 
 export default {
   config(_input) {
@@ -13,8 +14,34 @@ export default {
       const DATABASE_URL = new Config.Secret(stack, "DATABASE_URL");
       const COOKIE_SECRET = new Config.Secret(stack, "COOKIE_SECRET");
 
+      const AWS_REGION_NAME = new Config.Parameter(stack, "AWS_REGION_NAME", {
+        value: stack.region,
+      });
+
+      const profilePictureBucket = new Bucket(stack, "profilePicture", {
+        cdk: {
+          bucket: {
+            publicReadAccess: true,
+          },
+        },
+      });
+
+      profilePictureBucket.attachPermissions([
+        new PolicyStatement({
+          effect: Effect.ALLOW,
+          principals: [new StarPrincipal()],
+          actions: ["s3:GetObject"],
+          resources: [profilePictureBucket.bucketArn + "/*"],
+        }),
+      ]);
+
       const site = new RemixSite(stack, "site", {
-        bind: [DATABASE_URL, COOKIE_SECRET],
+        bind: [
+          DATABASE_URL,
+          COOKIE_SECRET,
+          profilePictureBucket,
+          AWS_REGION_NAME,
+        ],
         runtime: "nodejs20.x",
       });
 

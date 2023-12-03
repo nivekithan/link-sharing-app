@@ -1,9 +1,15 @@
 import { requireUser } from "@/authSession.server";
+import { getProfileDetails, setProfileDetails } from "@/models/profile.server";
+import { uploadFileToS3 } from "@/utils/fileUpload.server";
 import { cn } from "@/utils/styles";
 import { conform, useForm } from "@conform-to/react";
 import { parse } from "@conform-to/zod";
-import { type ActionFunctionArgs, json } from "@remix-run/node";
-import { Form, useActionData } from "@remix-run/react";
+import {
+  type ActionFunctionArgs,
+  json,
+  type LoaderFunctionArgs,
+} from "@remix-run/node";
+import { Form, useActionData, useLoaderData } from "@remix-run/react";
 import { type ChangeEvent, useRef, useState } from "react";
 import { z } from "zod";
 import { PrimaryActionButton } from "~/components/buttons";
@@ -12,10 +18,18 @@ import { InputField } from "~/components/inputs";
 import { TextBodyM, TextBodyS, TextHeadingS } from "~/components/typography";
 import "~/styles/overlayButton.css";
 
+export async function loader({ request }: LoaderFunctionArgs) {
+  const userId = await requireUser(request);
+  const profileDetails = await getProfileDetails(userId);
+
+  return json({ profileDetails });
+}
 const SetProfileDetialsSchema = z.object({
-  profilePicture: z.instanceof(File, {
-    message: "Profile picture is required",
-  }),
+  profilePicture: z
+    .instanceof(File, {
+      message: "Profile picture is required",
+    })
+    .optional(),
   firstName: z.string({ required_error: "First name is required" }).min(0),
   lastName: z.string({ required_error: "Lastname is required" }).min(0),
   email: z
@@ -24,7 +38,7 @@ const SetProfileDetialsSchema = z.object({
 });
 
 export async function action({ request }: ActionFunctionArgs) {
-  const [, formData] = await Promise.all([
+  const [userId, formData] = await Promise.all([
     requireUser(request),
     request.formData(),
   ]);
@@ -35,13 +49,30 @@ export async function action({ request }: ActionFunctionArgs) {
     return json({ submission });
   }
 
+  const imageUrl = submission.value.profilePicture
+    ? await uploadFileToS3(submission.value.profilePicture)
+    : undefined;
+
+  const { email, firstName, lastName } = submission.value;
+  await setProfileDetails({
+    email,
+    firstName,
+    lastName,
+    pictureUrl: imageUrl,
+    userId,
+  });
+
   return json({ submission });
 }
 
 export default function DashProfile() {
+  const { profileDetails } = useLoaderData<typeof loader>();
+
   const fileUploadRef = useRef<HTMLInputElement | null>(null);
   const actionData = useActionData<typeof action>();
-  const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
+  const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(
+    profileDetails?.pictureUrl || null,
+  );
 
   const [
     profileForm,
@@ -65,7 +96,6 @@ export default function DashProfile() {
   function onUploadImageInputChange(e: ChangeEvent<HTMLInputElement>) {
     const selectedFile = e.currentTarget.files && e.currentTarget.files[0];
 
-    console.log({ selectedFile });
     if (!selectedFile) {
       return;
     }
@@ -149,6 +179,7 @@ export default function DashProfile() {
                   ...conform.input(firstNameField),
                   error: firstNameField.error,
                   placeholder: "John",
+                  defaultValue: profileDetails?.firstName,
                 }}
               />
               <InputField
@@ -157,6 +188,7 @@ export default function DashProfile() {
                   ...conform.input(lastNameField),
                   error: lastNameField.error,
                   placeholder: "Doe",
+                  defaultValue: profileDetails?.lastName,
                 }}
               />
               <InputField
@@ -166,6 +198,7 @@ export default function DashProfile() {
                   type: "email",
                   error: emailField.error,
                   placeholder: "johndoe@email.com",
+                  defaultValue: profileDetails?.email,
                 }}
               />
             </div>
