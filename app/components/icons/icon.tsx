@@ -11,6 +11,7 @@ export default function Icon({ icon, ...props}: SVGProps<SVGSVGElement> & { icon
 }
 
 export const iconNames = [
+  "icon-arrow-right",
   "icon-chevron-down",
   "icon-codepen",
   "icon-codewars",

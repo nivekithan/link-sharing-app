@@ -63,68 +63,92 @@ export function InputField({ labelValue, inputProps }: InputFieldProps) {
 }
 
 export const platformLinkOptions = [
-  { displayText: "Github", icon: "icon-github", value: "github" },
+  {
+    displayText: "Github",
+    icon: "icon-github",
+    value: "github",
+    bgColor: "#1A1A1A",
+  },
   {
     displayText: "Frontend Mentor",
     icon: "icon-frontend-mentor",
     value: "frontend-mentor",
+    bgColor: "#FFFFFF",
+    fontColor: "#333333",
   },
   {
     displayText: "Twitter",
     icon: "icon-twitter",
     value: "twitter",
+    bgColor: "#43B7E9",
   },
   {
     displayText: "LinkedIn",
     icon: "icon-linkedin",
     value: "linkedin",
+    bgColor: "#2D68FF",
   },
   {
     displayText: "Youtube",
     icon: "icon-youtube",
     value: "youtube",
+    bgColor: "#EE3939",
   },
   {
     displayText: "Facebook",
     icon: "icon-facebook",
     value: "facebook",
+    bgColor: "#2442AC",
   },
   {
     displayText: "Twitch",
     icon: "icon-twitch",
     value: "twitch",
+    bgColor: "#EE3FC8",
   },
   {
     displayText: "Codewars",
     icon: "icon-codewars",
     value: "codewars",
+    bgColor: "#8A1A50",
   },
   {
     displayText: "Codepen",
     icon: "icon-codepen",
     value: "codepen",
+    bgColor: "#333333",
   },
   {
     displayText: "freecodecamp",
     icon: "icon-freecodecamp",
     value: "freecodecamp",
+    bgColor: "#302267",
   },
   {
     displayText: "Gitlab",
     icon: "icon-gitlab",
     value: "gitlab",
+    bgColor: "#EB4925",
   },
   {
     displayText: "Hashnode",
     icon: "icon-hashnode",
     value: "hashnode",
+    bgColor: "#0330D1",
   },
   {
     displayText: "Stack Overflow",
     icon: "icon-stack-overflow",
     value: "stack-overflow",
+    bgColor: "#EC7100",
   },
-] as const satisfies { value: string; icon: IconName; displayText: string }[];
+] as const satisfies {
+  value: string;
+  icon: IconName;
+  displayText: string;
+  bgColor: string;
+  fontColor?: string;
+}[];
 
 export type PlatformLinkState = {
   links: { platform: PlatformValue; link?: string; id: string }[];

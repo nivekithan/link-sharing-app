@@ -55,3 +55,20 @@ export function TextHeadingS({
     </h3>
   );
 }
+
+export type TextHeadingMProps = React.HTMLAttributes<HTMLHeadingElement>;
+
+export function TextHeadingM({
+  className,
+  children,
+  ...props
+}: TextHeadingMProps) {
+  return (
+    <h3
+      className={cn("font-bold text-[32px] leading-[150%]", className)}
+      {...props}
+    >
+      {children}
+    </h3>
+  );
+}

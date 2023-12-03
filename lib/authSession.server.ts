@@ -30,11 +30,11 @@ export async function requireAnon(request: Request) {
   const userId = await getUserFromRequest(request);
 
   if (userId !== null) {
-    throw redirect("/");
+    throw redirect("/dash/links");
   }
 }
 
-async function getUserFromRequest(request: Request) {
+export async function getUserFromRequest(request: Request) {
   const authSession = await authSessionStorage.getSession(
     request.headers.get("Cookie"),
   );

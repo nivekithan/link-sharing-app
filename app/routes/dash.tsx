@@ -1,16 +1,17 @@
 import { requireUser } from "@/authSession.server";
-import { type LoaderFunctionArgs } from "@remix-run/node";
-import { Link, Outlet } from "@remix-run/react";
+import { json, type LoaderFunctionArgs } from "@remix-run/node";
+import { Link, Outlet, useLoaderData } from "@remix-run/react";
 import { Icon, LogoDevlinksSmall } from "~/components/icons";
 import { TabLinks, Tabs } from "~/components/tabLinks";
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  await requireUser(request);
+  const userId = await requireUser(request);
 
-  return null;
+  return json({ userId });
 }
 
 export default function Dash() {
+  const { userId } = useLoaderData<typeof loader>();
   return (
     <div className="bg-lightGray">
       <div className="bg-white flex justify-between items-center pl-6 py-4 pr-4">
@@ -25,7 +26,7 @@ export default function Dash() {
         </Tabs>
         <div>
           <Link
-            to="/preview"
+            to={`/preview/${userId}`}
             className="px-4 py-3 text-purple border border-purple rounded-lg block"
           >
             <Icon className="w-5 h-5" icon="icon-preview-header" />
