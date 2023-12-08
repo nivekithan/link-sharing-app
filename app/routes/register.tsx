@@ -110,66 +110,68 @@ export default function RegisterPage() {
   });
 
   return (
-    <div className="p-8 flex flex-col gap-y-16">
-      <div className="flex gap-x-2 items-center">
-        <LogoDevlinksSmall />
-        <span className="font-bold text-2xl">devlinks</span>
-      </div>
-      <div className="flex flex-col gap-y-10">
-        <div className="flex flex-col gap-y-2">
-          <p className="text-2xl font-bold">Create Account</p>
-          <TextBodyM className="text-gray">
-            Let's get you started sharing your links
-          </TextBodyM>
+    <div className="md:bg-lightGray md:grid md:place-items-center">
+      <div className="p-8 flex flex-col gap-y-16 md:items-center md:justify-center md:min-h-screen md:gap-y-[52px] ">
+        <div className="flex gap-x-2 items-center">
+          <LogoDevlinksSmall />
+          <span className="font-bold text-2xl">devlinks</span>
         </div>
-        <Form
-          className="flex flex-col gap-y-6"
-          {...loginForm.props}
-          method="POST"
-        >
-          <InputField
-            labelValue="Email address"
-            inputProps={{
-              icon: "icon-email",
-              placeholder: "e.g.alex@email.com",
-              type: "email",
-              error: emailField.error,
-              ...conform.input(emailField),
-            }}
-          />
-          <InputField
-            labelValue="Password"
-            inputProps={{
-              icon: "icon-password",
-              placeholder: "Atleast 8 characters",
-              type: "password",
-              error: passwordField.error,
-              ...conform.input(passwordField),
-            }}
-          />
-          <InputField
-            labelValue="Confirm password"
-            inputProps={{
-              icon: "icon-password",
-              placeholder: "Atleast 8 characters",
-              type: "password",
-              error: confirmPasswordField.error,
-              ...conform.input(confirmPasswordField),
-            }}
-          />
-          <TextBodyS className="text-gray">
-            Password must contain at least 8 characters
-          </TextBodyS>
-          <PrimaryActionButton type="submit">
-            Create new account
-          </PrimaryActionButton>
-          <TextBodyM className="text-center flex flex-col">
-            <span className="text-gray">Already have an account</span>{" "}
-            <Link className="text-purple" prefetch="intent" to="/login">
-              Login
-            </Link>
-          </TextBodyM>
-        </Form>
+        <div className="flex flex-col gap-y-10 md:bg-white md:p-10 md:rounded-xl md:w-[476px]">
+          <div className="flex flex-col gap-y-2">
+            <p className="text-2xl font-bold">Create Account</p>
+            <TextBodyM className="text-gray">
+              Let's get you started sharing your links
+            </TextBodyM>
+          </div>
+          <Form
+            className="flex flex-col gap-y-6"
+            {...loginForm.props}
+            method="POST"
+          >
+            <InputField
+              labelValue="Email address"
+              inputProps={{
+                icon: "icon-email",
+                placeholder: "e.g.alex@email.com",
+                type: "email",
+                error: emailField.error,
+                ...conform.input(emailField),
+              }}
+            />
+            <InputField
+              labelValue="Password"
+              inputProps={{
+                icon: "icon-password",
+                placeholder: "Atleast 8 characters",
+                type: "password",
+                error: passwordField.error,
+                ...conform.input(passwordField),
+              }}
+            />
+            <InputField
+              labelValue="Confirm password"
+              inputProps={{
+                icon: "icon-password",
+                placeholder: "Atleast 8 characters",
+                type: "password",
+                error: confirmPasswordField.error,
+                ...conform.input(confirmPasswordField),
+              }}
+            />
+            <TextBodyS className="text-gray">
+              Password must contain at least 8 characters
+            </TextBodyS>
+            <PrimaryActionButton type="submit">
+              Create new account
+            </PrimaryActionButton>
+            <TextBodyM className="flex flex-col md:flex-row md:gap-x-1 md:justify-center">
+              <span className="text-gray">Already have an account?</span>{" "}
+              <Link className="text-purple" prefetch="intent" to="/login">
+                Login
+              </Link>
+            </TextBodyM>
+          </Form>
+        </div>
       </div>
     </div>
   );
