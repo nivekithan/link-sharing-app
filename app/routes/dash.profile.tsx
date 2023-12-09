@@ -15,7 +15,12 @@ import { z } from "zod";
 import { PrimaryActionButton } from "~/components/buttons";
 import { Icon } from "~/components/icons";
 import { InputField } from "~/components/inputs";
-import { TextBodyM, TextBodyS, TextHeadingS } from "~/components/typography";
+import {
+  TextBodyM,
+  TextBodyS,
+  TextHeadingM,
+  TextHeadingS,
+} from "~/components/typography";
 import "~/styles/overlayButton.css";
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -126,18 +131,23 @@ export default function DashProfile() {
       >
         <div className="p-6 flex flex-col gap-y-10">
           <div className="flex flex-col gap-y-2">
-            <h3 className="font-bold text-2xl leading-[150%] text-dark-gray">
+            <h3 className="font-bold text-2xl leading-[150%] text-dark-gray md:hidden">
               Profile Details
             </h3>
+            <TextHeadingM className="text-dark-gray hidden md:block">
+              Profile Details
+            </TextHeadingM>
             <TextBodyM className="text-gray">
               Add your details to create a personal touch to your profile
             </TextBodyM>
           </div>
 
           <div className="flex flex-col gap-y-6">
-            <div className="p-5 bg-lightGray rounded-xl flex flex-col gap-y-4">
-              <TextBodyM className="text-gray">Profile Picture</TextBodyM>
-              <div className="flex flex-col gap-y-6">
+            <div className="p-5 bg-lightGray rounded-xl flex flex-col gap-y-4 md:flex-row md:gap-x-4 md:items-center">
+              <TextBodyM className="text-gray md:min-w-[240px]">
+                Profile Picture
+              </TextBodyM>
+              <div className="flex flex-col gap-y-6 md:flex-row md:gap-x-6 md:items-center">
                 <input
                   type="file"
                   accept="image/*"
@@ -167,32 +177,58 @@ export default function DashProfile() {
                   </button>
                 </div>
                 <TextBodyS className="text-gray">
-                  Image must be blow 1024x1024 px. Use PNG or JPG format
+                  Image must be below 1024x1024 px. Use PNG or JPG format.
                 </TextBodyS>
               </div>
             </div>
 
             <div className="bg-lightGray p-5 flex flex-col gap-y-3">
               <InputField
-                labelValue="First name*"
+                labelValue={
+                  <>
+                    <p className="md:hidden">First Name*</p>
+                    <TextBodyM className="hidden text-gray md:block">
+                      First Name*
+                    </TextBodyM>
+                  </>
+                }
+                labelProps={{ className: "md:min-w-[240px]" }}
                 inputProps={{
                   ...conform.input(firstNameField),
                   error: firstNameField.error,
                   placeholder: "John",
                   defaultValue: profileDetails?.firstName,
                 }}
+                className="md:flex-row md:gap-x-4 md:items-center"
               />
               <InputField
-                labelValue="Last name*"
+                labelValue={
+                  <>
+                    <p className="md:hidden">Last Name*</p>
+                    <TextBodyM className="hidden text-gray md:block">
+                      Last Name*
+                    </TextBodyM>
+                  </>
+                }
+                labelProps={{ className: "md:min-w-[240px]" }}
                 inputProps={{
                   ...conform.input(lastNameField),
                   error: lastNameField.error,
                   placeholder: "Doe",
                   defaultValue: profileDetails?.lastName,
                 }}
+                className="md:flex-row md:gap-x-4 md:items-center"
               />
               <InputField
-                labelValue="Email"
+                labelValue={
+                  <>
+                    <p className="md:hidden">Email</p>
+                    <TextBodyM className="hidden text-gray md:block">
+                      Email
+                    </TextBodyM>
+                  </>
+                }
+                labelProps={{ className: "md:min-w-[240px]" }}
                 inputProps={{
                   ...conform.input(emailField),
                   type: "email",
@@ -200,12 +236,13 @@ export default function DashProfile() {
                   placeholder: "johndoe@email.com",
                   defaultValue: profileDetails?.email,
                 }}
+                className="md:flex-row md:gap-x-4 md:items-center"
               />
             </div>
           </div>
         </div>
-        <div className="border-t border-borders p-4">
-          <PrimaryActionButton className="w-full" type="submit">
+        <div className="border-t border-borders p-4 md:flex md:justify-end">
+          <PrimaryActionButton className="w-full md:w-fit" type="submit">
             Save
           </PrimaryActionButton>
         </div>

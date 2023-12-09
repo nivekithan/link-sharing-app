@@ -17,7 +17,7 @@ function Input({ className, icon, error, ...props }: InputProps) {
   const isIconPresent = icon !== undefined;
 
   return (
-    <div className="relative">
+    <div className="relative w-full">
       <input
         className={cn(
           "w-full rounded-lg border-borders border pl-4 pr-4 py-3 text-base leading-[150%] text-dark-gray focus:border-purple outline-none focus:ring-0 focus:ring-offset-0 focus:shadow-active caret-purple",
@@ -42,18 +42,29 @@ function Input({ className, icon, error, ...props }: InputProps) {
 }
 
 export type InputFieldProps = {
-  labelValue: string;
+  labelValue: React.ReactNode;
   inputProps: InputProps;
+  className?: string;
+  labelProps?: Omit<React.HTMLAttributes<HTMLLabelElement>, "children" | "id">;
 };
 
-export function InputField({ labelValue, inputProps }: InputFieldProps) {
+export function InputField({
+  className,
+  labelValue,
+  inputProps,
+  labelProps = {},
+}: InputFieldProps) {
   const id = useId();
   const error = inputProps.error;
 
   return (
-    <div className="flex flex-col gap-y-1">
+    <div className={cn("flex flex-col gap-y-1", className)}>
       <TextBodyS asChild>
-        <label htmlFor={id} className={cn(error ? "text-red" : undefined)}>
+        <label
+          {...labelProps}
+          htmlFor={id}
+          className={cn(error ? "text-red" : undefined, labelProps.className)}
+        >
           {labelValue}
         </label>
       </TextBodyS>

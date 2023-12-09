@@ -1,7 +1,6 @@
 import { db } from "@/utils/db.server";
 import { profileTable } from "./schema.server";
 import { eq } from "drizzle-orm";
-import { PgCidr } from "drizzle-orm/pg-core";
 
 export async function getProfileDetails(userId: string) {
   const profileList = await db
