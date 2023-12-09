@@ -5,6 +5,7 @@ import { type RemixLinkProps } from "@remix-run/react/dist/components";
 import { createContext, useContext } from "react";
 import { match } from "path-to-regexp";
 import { Icon } from "./icons";
+import { TextHeadingS } from "./typography";
 
 export type TabsProps = React.HTMLAttributes<HTMLDivElement>;
 
@@ -45,14 +46,20 @@ export function Tabs({ className, children }: TabsProps) {
 
 export type TabLinksProps = RemixLinkProps & { icon: IconName; value: string };
 
-export function TabLinks({ className, icon, value, ...props }: TabLinksProps) {
+export function TabLinks({
+  className,
+  icon,
+  value,
+  children,
+  ...props
+}: TabLinksProps) {
   const tabValue = useTabContext();
   const isTabActive = tabValue === value;
 
   return (
     <Link
       className={cn(
-        "rounded-lg px-7 py-3 text-gray block",
+        "rounded-lg px-7 py-3 text-gray block md:flex md:gap-x-2",
         isTabActive ? "bg-lightPurple text-purple" : undefined,
         className,
       )}
@@ -60,6 +67,7 @@ export function TabLinks({ className, icon, value, ...props }: TabLinksProps) {
       {...props}
     >
       <Icon className="w-5 h-5" icon={icon} />
+      <TextHeadingS className="hidden md:inline">{children}</TextHeadingS>
     </Link>
   );
 }

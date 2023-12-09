@@ -15,14 +15,24 @@ export default function Dash() {
   return (
     <div className="bg-lightGray">
       <div className="bg-white flex justify-between items-center pl-6 py-4 pr-4">
-        <LogoDevlinksSmall />
+        <div className="md:hidden">
+          <LogoDevlinksSmall />
+        </div>
+        <div className="hidden md:flex md:gap-x-2 md:items-center">
+          <LogoDevlinksSmall />
+          <span className="font-bold text-2xl">devlinks</span>
+        </div>
         <Tabs>
-          <TabLinks icon="icon-link" to="/dash/links" value="links" />
+          <TabLinks icon="icon-link" to="/dash/links" value="links">
+            Links
+          </TabLinks>
           <TabLinks
             icon="icon-profile-details-header"
             to="/dash/profile"
             value="profile"
-          />
+          >
+            Profile Details
+          </TabLinks>
         </Tabs>
         <div>
           <Link

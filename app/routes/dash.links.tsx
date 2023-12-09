@@ -15,7 +15,7 @@ import {
   validPlatformValue,
   PlatformLinkStoreProvider,
 } from "~/components/inputs";
-import { TextBodyM, TextHeadingS } from "~/components/typography";
+import { TextBodyM, TextHeadingM, TextHeadingS } from "~/components/typography";
 import {
   DndContext,
   closestCenter,
@@ -255,10 +255,10 @@ function SaveButton() {
     submitLinksFetcher.state === "submitting";
 
   return (
-    <div className="px-7 py-3">
+    <div className="px-7 py-3 flex justify-end">
       <PrimaryActionButton
         disabled={isSaveButtonDisabled}
-        className="w-full"
+        className="w-full md:w-fit"
         type="button"
         onClick={onSave}
       >
@@ -283,9 +283,14 @@ function AddNewLink() {
 function PageHeader() {
   return (
     <div className="flex flex-col gap-y-2">
-      <h3 className="text-2xl leading-[150%] font-bold">
+      <h3 className="text-2xl leading-[150%] font-bold md:hidden text-dark-gray">
         Customize your links
       </h3>
+
+      <TextHeadingM className="text-dark-gray hidden md:block">
+        Customize your links
+      </TextHeadingM>
+
       <TextBodyM className="text-gray">
         Add/edit/remove links below and then share your profiles with the world!
       </TextBodyM>
@@ -300,10 +305,13 @@ function LinksEmptyState() {
   return (
     <div className="p-5 flex flex-col gap-y-6 items-center">
       <EmptyLinksIllustration height={80} />
-      <p className="text-2xl font-bold leading-[150%] text-dark-gray">
+      <p className="text-2xl font-bold leading-[150%] text-dark-gray md:hidden">
         Let's get you started
       </p>
-      <TextBodyM className="text-gray text-center">
+      <TextHeadingM className="text-dark-gray hidden md:block">
+        Let's get you started
+      </TextHeadingM>
+      <TextBodyM className="text-gray text-center max-w-[488px]">
         Use the "Add new link" button to get started. Once you have more than
         one link, you can reorder and edit them. We're here to help you share
         profiles with everyone
