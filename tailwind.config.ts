@@ -19,6 +19,7 @@ export default {
       },
       boxShadow: {
         active: "0 0 32px 0 rgb(99 60 255 / 0.25)",
+        drop: "0 0 32px 0 rgb(0 0 0 / 0.1)",
       },
     },
   },
