@@ -1,14 +1,10 @@
 import { requireUser } from "@/authSession.server";
 import { getLinksForUser } from "@/models/links.server";
 import { getProfileDetails } from "@/models/profile.server";
-import { type ListOfLinks } from "@/models/schema.server";
-import { cn } from "@/utils/styles";
 import { json, type LoaderFunctionArgs } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
-import { useMemo } from "react";
 import { PrimaryActionButton } from "~/components/buttons";
-import { Icon } from "~/components/icons";
-import { platformLinkOptions } from "~/components/inputs";
+import { PlatformLinks } from "~/components/platformLinks";
 import { TextBodyM, TextHeadingM, TextHeadingS } from "~/components/typography";
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -75,41 +71,5 @@ export default function PreviewComponent() {
         </div>
       </div>
     </div>
-  );
-}
-
-function PlatformLinks({
-  platformLink,
-}: {
-  platformLink: ListOfLinks[number];
-}) {
-  const platformLinkOption = useMemo(() => {
-    return platformLinkOptions.find(
-      (option) => option.value === platformLink.platform,
-    );
-  }, [platformLink]);
-
-  if (platformLinkOption === undefined) {
-    throw new Error(`Invalid platformValue: ${platformLink.platform}`);
-  }
-
-  return (
-    <Link
-      to={platformLink.link}
-      className={cn(
-        "p-4 flex gap-x-2 w-full rounded-lg items-center",
-        platformLinkOption.fontColor ? undefined : "text-white",
-      )}
-      style={{ backgroundColor: platformLinkOption.bgColor }}
-      target="_blank"
-    >
-      <div className="w-5 h-5">
-        <Icon icon={platformLinkOption.icon} />
-      </div>
-      <TextBodyM className="flex-1">{platformLinkOption.displayText}</TextBodyM>
-      <div className="w-4 h-4">
-        <Icon icon="icon-arrow-right" />
-      </div>
-    </Link>
   );
 }

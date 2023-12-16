@@ -14,7 +14,7 @@ export default function Dash() {
   const { userId } = useLoaderData<typeof loader>();
   return (
     <div className="bg-lightGray">
-      <div className="bg-white flex justify-between items-center pl-6 py-4 pr-4">
+      <div className="bg-white flex justify-between items-center pl-6 py-4 pr-4 sticky top-0 z-50">
         <div className="md:hidden">
           <LogoDevlinksSmall />
         </div>

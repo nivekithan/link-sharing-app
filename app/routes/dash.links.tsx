@@ -14,6 +14,7 @@ import {
   usePlatformLinkStore,
   validPlatformValue,
   PlatformLinkStoreProvider,
+  platformLinkOptions,
 } from "~/components/inputs";
 import { TextBodyM, TextHeadingM, TextHeadingS } from "~/components/typography";
 import {
@@ -36,6 +37,9 @@ import { CSS } from "@dnd-kit/utilities";
 import { useFetcher, useLoaderData } from "@remix-run/react";
 import { type ZodLiteral, z } from "zod";
 import { getLinksForUser, setLinksForUser } from "@/models/links.server";
+import { PhoneMockup } from "~/components/illustrations/phoneMockup";
+import { PlatformLinks } from "~/components/platformLinks";
+import { useMemo } from "react";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const userId = await requireUser(request);
@@ -76,12 +80,46 @@ export default function DashLinks() {
 
   return (
     <div className="p-4">
-      <div className="bg-white">
-        <PlatformLinkStoreProvider links={listOfLinks}>
-          <AllLinks />
-          <Seperator />
-          <SaveButton />
-        </PlatformLinkStoreProvider>
+      <PlatformLinkStoreProvider links={listOfLinks}>
+        <div className="xl:flex xl:gap-x-6">
+          <InteractivePhoneMockup />
+          <div className="bg-white xl:flex-1">
+            <AllLinks />
+            <Seperator />
+            <SaveButton />
+          </div>
+        </div>
+      </PlatformLinkStoreProvider>
+    </div>
+  );
+}
+
+function InteractivePhoneMockup() {
+  const links = usePlatformLinkStore((store) => store.links);
+  const firstFivelinks = links.slice(0, 5);
+
+  return (
+    <div className="hidden xl:grid min-w-[560px] max-h-[810px] bg-white p-6 place-items-center sticky top-[96px]">
+      <div className="relative">
+        <PhoneMockup />
+        {firstFivelinks.map((platformLink, i) => {
+          const platform = platformLink.platform;
+          const link = platformLink.link;
+
+          if (link === undefined) {
+            return null;
+          }
+
+          return (
+            <div
+              className="absolute left-[35.5px] right-[35.5px]"
+              key={platformLink.id}
+              style={{ top: `${277.5 + i * (42 + 23)}px` }}
+            >
+              <PlatformLinks platformLink={{ link, platform }} small />
+            </div>
+          );
+        })}
       </div>
     </div>
   );
@@ -250,9 +288,8 @@ function SaveButton() {
   const linksLength = links.length;
   const doesAllLinksValid = links.every((link) => Boolean(link.link));
   const isSaveButtonDisabled =
-    linksLength === 0 ||
-    !doesAllLinksValid ||
-    submitLinksFetcher.state === "submitting";
+    linksLength !== 0 &&
+    (!doesAllLinksValid || submitLinksFetcher.state === "submitting");
 
   return (
     <div className="px-7 py-3 flex justify-end">
@@ -304,7 +341,7 @@ function Seperator() {
 function LinksEmptyState() {
   return (
     <div className="p-5 flex flex-col gap-y-6 items-center">
-      <EmptyLinksIllustration height={80} />
+      <EmptyLinksIllustration className="h-[80px] md:h-[160px]" />
       <p className="text-2xl font-bold leading-[150%] text-dark-gray md:hidden">
         Let's get you started
       </p>
