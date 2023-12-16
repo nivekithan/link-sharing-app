@@ -43,9 +43,9 @@ export default function PreviewComponent() {
           <PrimaryActionButton>Share Link</PrimaryActionButton>
         </div>
       </div>
-      <div className="grid place-items-center mt-[60px]">
-        <div className="bg-white rounded-xl py-12 px-14 md:shadow-drop">
-          <div className="flex flex-col gap-y-14 justify-center items-center w-fit">
+      <div className="grid place-items-center mt-[60px] ">
+        <div className="bg-white rounded-xl py-12 px-14 md:shadow-drop w-[349px]">
+          <div className="flex flex-col gap-y-14 justify-center items-center">
             <div className="flex flex-col gap-y-6 items-center justify-center">
               <img
                 className="w-[104px] h-[104px] bg-size border-4 border-purple rounded-full"

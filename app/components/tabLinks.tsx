@@ -59,7 +59,7 @@ export function TabLinks({
   return (
     <Link
       className={cn(
-        "rounded-lg px-7 py-3 text-gray block md:flex md:gap-x-2",
+        "rounded-lg px-7 py-3 text-gray block md:flex md:gap-x-2 md:items-center",
         isTabActive ? "bg-lightPurple text-purple" : undefined,
         className,
       )}
