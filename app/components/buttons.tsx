@@ -12,7 +12,7 @@ export function PrimaryActionButton({
   return (
     <button
       className={cn(
-        "bg-purple text-white px-7 py-3 rounded-lg disabled:bg-purple/25 hover:bg-purpleHover",
+        "bg-purple text-white px-7 py-3 rounded-lg disabled:bg-purple/25 hover:bg-purpleHover transition-colors",
         className,
       )}
       {...props}

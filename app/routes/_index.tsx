@@ -3,5 +3,5 @@ import { type LoaderFunctionArgs, redirect } from "@remix-run/node";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   await requireUser(request);
-  return redirect("/dash");
+  return redirect("/dash/links");
 }
