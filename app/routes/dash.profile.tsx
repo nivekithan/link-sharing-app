@@ -1,4 +1,5 @@
 import { requireUser } from "@/authSession.server";
+import { getLinksForUser } from "@/models/links.server";
 import { getProfileDetails, setProfileDetails } from "@/models/profile.server";
 import { uploadFileToS3 } from "@/utils/fileUpload.server";
 import { cn } from "@/utils/styles";
@@ -12,9 +13,10 @@ import {
 import { Form, useActionData, useLoaderData } from "@remix-run/react";
 import { type ChangeEvent, useRef, useState } from "react";
 import { z } from "zod";
+import { InteractivePhoneMockup } from "~/components/IteractivePhoneMockup";
 import { PrimaryActionButton } from "~/components/buttons";
 import { Icon } from "~/components/icons";
-import { InputField } from "~/components/inputs";
+import { InputField, PlatformLinkStoreProvider } from "~/components/inputs";
 import {
   TextBodyM,
   TextBodyS,
@@ -25,9 +27,12 @@ import "~/styles/overlayButton.css";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const userId = await requireUser(request);
-  const profileDetails = await getProfileDetails(userId);
+  const [profileDetails, links] = await Promise.all([
+    getProfileDetails(userId),
+    getLinksForUser({ userId }),
+  ]);
 
-  return json({ profileDetails });
+  return json({ profileDetails, links });
 }
 const SetProfileDetialsSchema = z.object({
   profilePicture: z
@@ -71,7 +76,7 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export default function DashProfile() {
-  const { profileDetails } = useLoaderData<typeof loader>();
+  const { profileDetails, links } = useLoaderData<typeof loader>();
 
   const fileUploadRef = useRef<HTMLInputElement | null>(null);
   const actionData = useActionData<typeof action>();
@@ -122,131 +127,143 @@ export default function DashProfile() {
   }
 
   return (
-    <div className="p-4 bg-lightGray">
-      <Form
-        className="bg-white"
-        method="POST"
-        encType="multipart/form-data"
-        {...profileForm.props}
-      >
-        <div className="p-6 flex flex-col gap-y-10">
-          <div className="flex flex-col gap-y-2">
-            <h3 className="font-bold text-2xl leading-[150%] text-dark-gray md:hidden">
-              Profile Details
-            </h3>
-            <TextHeadingM className="text-dark-gray hidden md:block">
-              Profile Details
-            </TextHeadingM>
-            <TextBodyM className="text-gray">
-              Add your details to create a personal touch to your profile
-            </TextBodyM>
-          </div>
-
-          <div className="flex flex-col gap-y-6">
-            <div className="p-5 bg-lightGray rounded-xl flex flex-col gap-y-4 md:flex-row md:gap-x-4 md:items-center">
-              <TextBodyM className="text-gray md:min-w-[240px]">
-                Profile Picture
+    <div className="p-4 bg-lightGray md:p-6">
+      <div className="flex gap-x-6">
+        <PlatformLinkStoreProvider links={links}>
+          <InteractivePhoneMockup
+            email={profileDetails?.email}
+            firstName={profileDetails?.firstName}
+            lastName={profileDetails?.lastName}
+            pictureUrl={profileDetails?.pictureUrl}
+          />
+        </PlatformLinkStoreProvider>
+        <Form
+          className="bg-white flex-1"
+          method="POST"
+          encType="multipart/form-data"
+          {...profileForm.props}
+        >
+          <div className="p-6 flex flex-col gap-y-10">
+            <div className="flex flex-col gap-y-2">
+              <h3 className="font-bold text-2xl leading-[150%] text-dark-gray md:hidden">
+                Profile Details
+              </h3>
+              <TextHeadingM className="text-dark-gray hidden md:block">
+                Profile Details
+              </TextHeadingM>
+              <TextBodyM className="text-gray">
+                Add your details to create a personal touch to your profile
               </TextBodyM>
-              <div className="flex flex-col gap-y-6 md:flex-row md:gap-x-6 md:items-center">
-                <input
-                  type="file"
-                  accept="image/*"
-                  hidden
-                  ref={fileUploadRef}
-                  {...conform.input(profilePictureField)}
-                  onChange={onUploadImageInputChange}
-                />
-                <div className="relative">
-                  <button
-                    className={cn(
-                      "bg-lightPurple rounded-xl w-[193px] h-[193px] flex justify-center items-center flex-col gap-y-2 text-purple z-10 bg-no-repeat",
-                      imagePreviewUrl ? "overlay-button text-white" : undefined,
-                    )}
-                    type="button"
-                    onClick={onUploadImage}
-                    style={{
-                      backgroundImage: `url(${imagePreviewUrl})`,
-                    }}
-                  >
-                    <div className="w-10 h-10">
-                      <Icon icon="icon-upload-image" />
-                    </div>
-                    <TextHeadingS>
-                      {imagePreviewUrl ? "Change Picture" : "+ Upload Image"}
-                    </TextHeadingS>
-                  </button>
+            </div>
+
+            <div className="flex flex-col gap-y-6">
+              <div className="p-5 bg-lightGray rounded-xl flex flex-col gap-y-4 md:flex-row md:gap-x-4 md:items-center">
+                <TextBodyM className="text-gray md:min-w-[240px]">
+                  Profile Picture
+                </TextBodyM>
+                <div className="flex flex-col gap-y-6 md:flex-row md:gap-x-6 md:items-center">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    hidden
+                    ref={fileUploadRef}
+                    {...conform.input(profilePictureField)}
+                    onChange={onUploadImageInputChange}
+                  />
+                  <div className="relative">
+                    <button
+                      className={cn(
+                        "bg-lightPurple rounded-xl w-[193px] h-[193px] flex justify-center items-center flex-col gap-y-2 text-purple z-10 bg-no-repeat",
+                        imagePreviewUrl
+                          ? "overlay-button text-white"
+                          : undefined,
+                      )}
+                      type="button"
+                      onClick={onUploadImage}
+                      style={{
+                        backgroundImage: `url(${imagePreviewUrl})`,
+                      }}
+                    >
+                      <div className="w-10 h-10">
+                        <Icon icon="icon-upload-image" />
+                      </div>
+                      <TextHeadingS>
+                        {imagePreviewUrl ? "Change Picture" : "+ Upload Image"}
+                      </TextHeadingS>
+                    </button>
+                  </div>
+                  <TextBodyS className="text-gray">
+                    Image must be below 1024x1024 px. Use PNG or JPG format.
+                  </TextBodyS>
                 </div>
-                <TextBodyS className="text-gray">
-                  Image must be below 1024x1024 px. Use PNG or JPG format.
-                </TextBodyS>
+              </div>
+
+              <div className="bg-lightGray p-5 flex flex-col gap-y-3">
+                <InputField
+                  labelValue={
+                    <>
+                      <p className="md:hidden">First Name*</p>
+                      <TextBodyM className="hidden text-gray md:block">
+                        First Name*
+                      </TextBodyM>
+                    </>
+                  }
+                  labelProps={{ className: "md:min-w-[240px]" }}
+                  inputProps={{
+                    ...conform.input(firstNameField),
+                    error: firstNameField.error,
+                    placeholder: "John",
+                    defaultValue: profileDetails?.firstName,
+                  }}
+                  className="md:flex-row md:gap-x-4 md:items-center"
+                />
+                <InputField
+                  labelValue={
+                    <>
+                      <p className="md:hidden">Last Name*</p>
+                      <TextBodyM className="hidden text-gray md:block">
+                        Last Name*
+                      </TextBodyM>
+                    </>
+                  }
+                  labelProps={{ className: "md:min-w-[240px]" }}
+                  inputProps={{
+                    ...conform.input(lastNameField),
+                    error: lastNameField.error,
+                    placeholder: "Doe",
+                    defaultValue: profileDetails?.lastName,
+                  }}
+                  className="md:flex-row md:gap-x-4 md:items-center"
+                />
+                <InputField
+                  labelValue={
+                    <>
+                      <p className="md:hidden">Email</p>
+                      <TextBodyM className="hidden text-gray md:block">
+                        Email
+                      </TextBodyM>
+                    </>
+                  }
+                  labelProps={{ className: "md:min-w-[240px]" }}
+                  inputProps={{
+                    ...conform.input(emailField),
+                    type: "email",
+                    error: emailField.error,
+                    placeholder: "johndoe@email.com",
+                    defaultValue: profileDetails?.email,
+                  }}
+                  className="md:flex-row md:gap-x-4 md:items-center"
+                />
               </div>
             </div>
-
-            <div className="bg-lightGray p-5 flex flex-col gap-y-3">
-              <InputField
-                labelValue={
-                  <>
-                    <p className="md:hidden">First Name*</p>
-                    <TextBodyM className="hidden text-gray md:block">
-                      First Name*
-                    </TextBodyM>
-                  </>
-                }
-                labelProps={{ className: "md:min-w-[240px]" }}
-                inputProps={{
-                  ...conform.input(firstNameField),
-                  error: firstNameField.error,
-                  placeholder: "John",
-                  defaultValue: profileDetails?.firstName,
-                }}
-                className="md:flex-row md:gap-x-4 md:items-center"
-              />
-              <InputField
-                labelValue={
-                  <>
-                    <p className="md:hidden">Last Name*</p>
-                    <TextBodyM className="hidden text-gray md:block">
-                      Last Name*
-                    </TextBodyM>
-                  </>
-                }
-                labelProps={{ className: "md:min-w-[240px]" }}
-                inputProps={{
-                  ...conform.input(lastNameField),
-                  error: lastNameField.error,
-                  placeholder: "Doe",
-                  defaultValue: profileDetails?.lastName,
-                }}
-                className="md:flex-row md:gap-x-4 md:items-center"
-              />
-              <InputField
-                labelValue={
-                  <>
-                    <p className="md:hidden">Email</p>
-                    <TextBodyM className="hidden text-gray md:block">
-                      Email
-                    </TextBodyM>
-                  </>
-                }
-                labelProps={{ className: "md:min-w-[240px]" }}
-                inputProps={{
-                  ...conform.input(emailField),
-                  type: "email",
-                  error: emailField.error,
-                  placeholder: "johndoe@email.com",
-                  defaultValue: profileDetails?.email,
-                }}
-                className="md:flex-row md:gap-x-4 md:items-center"
-              />
-            </div>
           </div>
-        </div>
-        <div className="border-t border-borders p-4 md:flex md:justify-end">
-          <PrimaryActionButton className="w-full md:w-fit" type="submit">
-            Save
-          </PrimaryActionButton>
-        </div>
-      </Form>
+          <div className="border-t border-borders p-4 md:flex md:justify-end">
+            <PrimaryActionButton className="w-full md:w-fit" type="submit">
+              Save
+            </PrimaryActionButton>
+          </div>
+        </Form>
+      </div>
     </div>
   );
 }
