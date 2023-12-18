@@ -3,6 +3,7 @@ import { json, type LoaderFunctionArgs } from "@remix-run/node";
 import { Link, Outlet, useLoaderData } from "@remix-run/react";
 import { Icon, LogoDevlinksSmall } from "~/components/icons";
 import { TabLinks, Tabs } from "~/components/tabLinks";
+import { TextHeadingS } from "~/components/typography";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const userId = await requireUser(request);
@@ -39,7 +40,8 @@ export default function Dash() {
             to={`/preview/${userId}`}
             className="px-4 py-3 text-purple border border-purple rounded-lg block"
           >
-            <Icon className="w-5 h-5" icon="icon-preview-header" />
+            <Icon className="w-5 h-5 md:hidden" icon="icon-preview-header" />
+            <TextHeadingS className="hidden md:inline">Preview</TextHeadingS>
           </Link>
         </div>
       </div>
