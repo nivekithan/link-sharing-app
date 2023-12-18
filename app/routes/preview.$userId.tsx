@@ -6,6 +6,8 @@ import { Link, useLoaderData } from "@remix-run/react";
 import { PrimaryActionButton } from "~/components/buttons";
 import { PlatformLinks } from "~/components/platformLinks";
 import { TextBodyM, TextHeadingM, TextHeadingS } from "~/components/typography";
+import { resolveValue, toast, Toaster } from "react-hot-toast";
+import { Icon } from "~/components/icons";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const userId = await requireUser(request);
@@ -25,6 +27,10 @@ export async function loader({ request }: LoaderFunctionArgs) {
 export default function PreviewComponent() {
   const { profileDetials, userLinks } = useLoaderData<typeof loader>();
 
+  function onShareLink() {
+    navigator.clipboard.writeText(window.location.href);
+    toast("The link has been copied to your clipboard");
+  }
   return (
     <div>
       <div className="hidden md:block md:absolute bg-purple top-0 left-0 right-0 h-[357px] rounded-b-[32px] -z-10"></div>
@@ -36,7 +42,9 @@ export default function PreviewComponent() {
           >
             <TextHeadingS>Back to Editor</TextHeadingS>
           </Link>
-          <PrimaryActionButton>Share Link</PrimaryActionButton>
+          <PrimaryActionButton type="button" onClick={onShareLink}>
+            Share Link
+          </PrimaryActionButton>
         </div>
       </div>
       <div className="grid place-items-center mt-[60px] ">
@@ -70,6 +78,14 @@ export default function PreviewComponent() {
           </div>
         </div>
       </div>
+      <Toaster position="bottom-center">
+        {(t) => (
+          <div className="bg-dark-gray text-white rounded-xl px-6 py-4 flex gap-x-2 items-center shadow-drop">
+            <Icon icon="icon-link" className="w-5 h-5 text-gray" />
+            <TextHeadingS>{resolveValue(t.message, t)}</TextHeadingS>
+          </div>
+        )}
+      </Toaster>
     </div>
   );
 }
